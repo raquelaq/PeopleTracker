@@ -25,6 +25,9 @@ def main():
             cv2.rectangle(frame, (person.rect[0], person.rect[1]), (person.rect[0] + person.rect[2], person.rect[1] + person.rect[3]), (0, 255, 0), 2)
             cv2.putText(frame, f'ID: {person.id}', (person.rect[0], person.rect[1] - 10), cv2.FONT_HERSHEY_SIMPLEX, 0.5, (0, 255, 0), 2)
 
+            if person.matched:
+                cv2.circle(frame, (person.rect[0], person.rect[1]), 5, (0, 0, 255), -1)
+                
         cv2.imshow('People Tracking', frame)
         frame_number += 1
 

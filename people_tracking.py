@@ -3,19 +3,18 @@ import numpy as np
 from person import Person
 
 def non_max_suppression(boxes, overlapThresh):
-    # if there are no boxes, return an empty list
+    # Si no hay cajas, devuelve una lista vacía
     if len(boxes) == 0:
         return []
 
-    # if the bounding boxes are integers, convert them to floats -- this is important since
-    # we'll be doing a bunch of divisions
+    # Convierte las coordenadas de las cajas a números de punto flotante si son enteros
     if boxes.dtype.kind == "i":
         boxes = boxes.astype("float")
 
-    # initialize the list of picked indexes
+    # Inicializa la lista de índices seleccionados
     pick = []
 
-    # grab the coordinates of the bounding boxes
+    # Obtiene las coordenadas de las cajas
     x1 = boxes[:,0]
     y1 = boxes[:,1]
     x2 = x1 + boxes[:,2]
