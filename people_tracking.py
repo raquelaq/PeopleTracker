@@ -61,35 +61,38 @@ class PeopleTracker:
         self.next_id = 1
 
     def track_people(self, frame, detections, frame_number):
-        # Supresión de no máximos en las detecciones
         detections = np.array([[x, y, w, h] for (x, y, w, h) in detections])
-        filtered_detections = non_max_suppression(detections, 0.3)
-        
-        # Actualizar las personas rastreadas con las detecciones actuales
-        for person in self.people:
-            person.matched = False  # Restablece el estado de coincidencia para esta ronda
 
-        # Para cada detección, encuentra la persona rastreada más cercana y actualízala
-        for detection in detections:
+        # Filtrar detecciones basadas en la relación de aspecto
+        filtered_detections = []
+        for (x, y, w, h) in detections:
+            aspect_ratio = h / float(w)
+            if 1.5 <= aspect_ratio <= 3.5:  # Ajustar los valores según sea necesario
+                filtered_detections.append((x, y, w, h))
+
+        filtered_detections = np.array(filtered_detections)
+        filtered_detections = non_max_suppression(filtered_detections, 0.3)
+
+        for person in self.people:
+            person.matched = False
+
+        for detection in filtered_detections:
             x, y, w, h = detection
             best_match = None
             min_distance = float('inf')
 
             for person in self.people:
-                distance = person.calculate_distance(detection)  # Necesitarás implementar este método
+                distance = person.calculate_distance(detection)
                 if distance < min_distance:
                     min_distance = distance
                     best_match = person
 
-            # Si la mejor coincidencia está lo suficientemente cerca, actualiza la persona rastreada
             if best_match and min_distance < 60:
                 best_match.update(detection, frame, frame_number)
             else:
-                # Si no hay coincidencias cercanas, crea una nueva persona rastreada
                 new_person = Person(self.next_id, detection)
                 new_person.update(detection, frame, frame_number)
                 self.people.append(new_person)
                 self.next_id += 1
 
-        # Elimina las personas que no han sido coincidentes en este frame y no han sido vistas en un tiempo
         self.people = [person for person in self.people if person.matched or (frame_number - person.last_seen) < 40]
