@@ -12,12 +12,29 @@ def main():
         if not ret:
             break
 
+        scale_factor = 1.5
+        frame = cv2.resize(frame, None, fx=scale_factor, fy=scale_factor, interpolation=cv2.INTER_LINEAR)
+
+        height, width = frame.shape[:2]
+
+        new_width = int(width / scale_factor)
+        new_height = int(height / scale_factor)
+        x_center = width // 2
+        y_center = height // 2
+        x1 = x_center - (new_width // 2)
+        x2 = x_center + (new_width // 2)
+        y1 = y_center - (new_height // 2)
+        y2 = y_center + (new_height // 2)
+
+        # Recortar el frame para centrarlo
+        frame = frame[y1:y2, x1:x2]
+
         gray_frame = cv2.cvtColor(frame, cv2.COLOR_BGR2GRAY)
         # Ajustar los parámetros para hacer el clasificador más estricto
         detections = haar_cascade.detectMultiScale(gray_frame, 
                                                    scaleFactor=1.2,  # Más estricto
-                                                   minNeighbors=12,   # Más estricto
-                                                   minSize=(50, 100)) # Más estricto
+                                                   minNeighbors=10,   # Más estricto
+                                                   minSize=(40, 70)) # Más estricto
 
         tracker.track_people(frame, detections, frame_number)
 

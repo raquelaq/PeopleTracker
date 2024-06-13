@@ -87,7 +87,7 @@ class PeopleTracker:
                     min_distance = distance
                     best_match = person
 
-            if best_match and min_distance < 60:
+            if best_match and min_distance < 65:
                 best_match.update(detection, frame, frame_number)
             else:
                 new_person = Person(self.next_id, detection)
@@ -95,4 +95,4 @@ class PeopleTracker:
                 self.people.append(new_person)
                 self.next_id += 1
 
-        self.people = [person for person in self.people if person.matched or (frame_number - person.last_seen) < 40]
+        self.people = [person for person in self.people if person.matched or (frame_number - person.last_seen) < 50]
